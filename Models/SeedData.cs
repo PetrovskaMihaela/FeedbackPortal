@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FeedbackPortal.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -9,12 +11,62 @@ namespace FeedbackPortal.Models
 {
     public class SeedData
     {
+        public static async Task CreateUserRoles(IServiceProvider serviceProvider)
+        {
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<FeedbackPortalUser>>();
+            IdentityResult roleResult;
+
+            //Add Admin Role
+            var roleCheck = await RoleManager.RoleExistsAsync("Admin");
+            if (!roleCheck) { roleResult = await RoleManager.CreateAsync(new IdentityRole("Admin")); }
+
+            //Add Admin User
+            FeedbackPortalUser user = await UserManager.FindByEmailAsync("admin@fp.com");
+            if (user == null)
+            {
+                var User = new FeedbackPortalUser();
+                User.Email = "admin@fp.com";
+                User.UserName = "admin@fp.com";
+                string userPWD = "Admin123";
+                IdentityResult chkUser = await UserManager.CreateAsync(User, userPWD);
+                //Add default User to Role Admin
+                if (chkUser.Succeeded) { var result1 = await UserManager.AddToRoleAsync(User, "Admin"); }
+            }
+
+            //Add Teacher Role
+            roleCheck = await RoleManager.RoleExistsAsync("Employee");
+            if (!roleCheck)
+            {
+                roleResult = await RoleManager.CreateAsync(new IdentityRole("Employee"));
+            }
+
+            user = await UserManager.FindByEmailAsync("robreiner@fp.com");
+            if (user == null)
+            {
+                var User = new FeedbackPortalUser();
+                User.Email = "robreiner@fp.com";
+                User.UserName = "robreiner@fp.com";
+                User.EmployeeId = 1;
+                string userPWD = "Robreiner123";
+                IdentityResult chkUser = await UserManager.CreateAsync(User, userPWD);
+                if (chkUser.Succeeded) { var result1 = await UserManager.AddToRoleAsync(User, "Employee"); }
+            }
+
+            //Add Student Role
+            roleCheck = await RoleManager.RoleExistsAsync("Client");
+            if (!roleCheck)
+            {
+                roleResult = await RoleManager.CreateAsync(new IdentityRole("Client"));
+            }
+        }
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var context = new FeedbackPortalContext(
             serviceProvider.GetRequiredService<
             DbContextOptions<FeedbackPortalContext>>()))
             {
+                CreateUserRoles(serviceProvider).Wait();
                 // Look for any movies.
                 if (context.Product.Any() || context.Client.Any() || context.Employee.Any() || context.Feedback.Any())
                 {

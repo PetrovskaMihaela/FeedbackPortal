@@ -4,10 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using FeedbackPortal.Models;
+using FeedbackPortal.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace FeedbackPortal.Models
 {
-    public class FeedbackPortalContext : DbContext
+    public class FeedbackPortalContext : IdentityDbContext<FeedbackPortalUser>
     {
         public FeedbackPortalContext(DbContextOptions<FeedbackPortalContext> options)
             : base(options)
@@ -25,6 +27,8 @@ namespace FeedbackPortal.Models
         protected override void OnModelCreating(ModelBuilder builder)
         {
             {
+                base.OnModelCreating(builder);
+
                 builder.Entity<Feedback>()
                 .HasOne<Product>(p => p.Product)
                 .WithMany(p => p.Feedbacks)

@@ -1,4 +1,6 @@
-﻿using FeedbackPortal.Models;
+﻿using FeedbackPortal.Areas.Identity.Data;
+using FeedbackPortal.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,14 +14,35 @@ namespace FeedbackPortal.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly FeedbackPortalContext _context;
+        private readonly UserManager<FeedbackPortalUser> userManager;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, FeedbackPortalContext context, UserManager<FeedbackPortalUser> usrMgr)
         {
             _logger = logger;
+            _context = context;
+            userManager = usrMgr;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            if (User.IsInRole("Admin"))
+            {
+                return RedirectToAction("Index", "Products");
+            }
+            else if (User.IsInRole("Employee"))
+            {
+                //Get TeacherId
+                var userID = userManager.GetUserId(User);
+                FeedbackPortalUser user = await userManager.FindByIdAsync(userID);
+                return RedirectToAction("Index", "Products", new { id = user.EmployeeId });
+            }
+            else if (User.IsInRole("Client"))
+            {
+                var userID = userManager.GetUserId(User);
+                FeedbackPortalUser user = await userManager.FindByIdAsync(userID);
+                return RedirectToAction("Index", "Products", new { id = user.ClientId });
+            }
             return View();
         }
 
