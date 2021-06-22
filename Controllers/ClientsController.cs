@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FeedbackPortal.Models;
 using FeedbackPortal.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FeedbackPortal.Controllers
 {
@@ -59,6 +60,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Clients/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -67,6 +69,7 @@ namespace FeedbackPortal.Controllers
         // POST: Clients/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Number,Email")] Client client)
@@ -81,6 +84,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Clients/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -99,6 +103,7 @@ namespace FeedbackPortal.Controllers
         // POST: Clients/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Number,Email")] Client client)
@@ -132,6 +137,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Clients/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -152,6 +158,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // POST: Clients/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

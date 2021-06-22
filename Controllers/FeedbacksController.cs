@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FeedbackPortal.Models;
 using FeedbackPortal.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FeedbackPortal.Controllers
 {
@@ -45,6 +46,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Feedbacks/Details/5
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -65,6 +67,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Feedbacks/Create
+        [Authorize(Roles = "Client, User")]
         public IActionResult Create()
         {
             ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name");
@@ -75,6 +78,7 @@ namespace FeedbackPortal.Controllers
         // POST: Feedbacks/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Client, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Details,Type,ClientId,ProductId")] Feedback feedback)
@@ -91,6 +95,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Feedbacks/Edit/5
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -111,6 +116,7 @@ namespace FeedbackPortal.Controllers
         // POST: Feedbacks/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Client")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Details,Type,ClientId,ProductId")] Feedback feedback)
@@ -146,6 +152,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Feedbacks/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -166,6 +173,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // POST: Feedbacks/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -179,6 +187,142 @@ namespace FeedbackPortal.Controllers
         private bool FeedbackExists(int id)
         {
             return _context.Feedback.Any(e => e.Id == id);
+        }
+
+        // GET: Feedbacks/ClientViewFeedback/5
+        [Authorize(Roles = "Client")]
+        public async Task<IActionResult> ClientViewFeedback(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var feedback = await _context.Feedback
+                 .Include(f => f.Client)
+                .Include(f => f.Product)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+
+            return View(feedback);
+        }
+
+        // GET: Feedbacks/FeedbackEditEmployee/5
+        [Authorize(Roles = "Employee")]
+        public async Task<IActionResult> FeedbackEditEmployee(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var feedback = await _context.Feedback.FindAsync(id);
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name", feedback.ClientId);
+            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Name", feedback.ProductId);
+            return View(feedback);
+        }
+
+        // POST: Feedbacks/EmployeeEditFeedback/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Employee")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EmployeeEditFeedback(int id, [Bind("Id,Title,Details,Type,ClientId,ProductId")] Feedback feedback)
+        {
+            if (id != feedback.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(feedback);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!FeedbackExists(feedback.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name", feedback.ClientId);
+            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Name", feedback.ProductId);
+            return View(feedback);
+        }
+
+        // GET: Feedbacks/FeedbackEditClient/5
+        [Authorize(Roles = "Client")]
+        public async Task<IActionResult> FeedbackEditClient(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var feedback = await _context.Feedback.FindAsync(id);
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name", feedback.ClientId);
+            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Name", feedback.ProductId);
+            return View(feedback);
+        }
+
+        // POST: Enrollments/StudentEdit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Client")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> StudentEdit(int id, [Bind("Id,Title,Details,Type,ClientId,ProductId")] Feedback feedback)
+        {
+                
+            if (id != feedback.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(feedback);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!FeedbackExists(feedback.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Name", feedback.ClientId);
+            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Name", feedback.ProductId);
+            return View(feedback);
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FeedbackPortal.Models;
 using FeedbackPortal.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FeedbackPortal.Controllers
 {
@@ -64,6 +65,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Products/Create
+        [Authorize(Roles = "Admin, Employee")]
         public IActionResult Create()
         {
             ViewData["EmployeeId"] = new SelectList(_context.Employee, "Id", "Name");
@@ -73,6 +75,7 @@ namespace FeedbackPortal.Controllers
         // POST: Products/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, Employee")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Type,EmployeeId")] Product product)
@@ -88,6 +91,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Products/Edit/5
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -107,6 +111,7 @@ namespace FeedbackPortal.Controllers
         // POST: Products/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, Employee")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,EmployeeId")] Product product)
@@ -141,6 +146,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Products/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -162,6 +168,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // POST: Products/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -175,6 +182,29 @@ namespace FeedbackPortal.Controllers
         private bool ProductExists(int id)
         {
             return _context.Product.Any(e => e.Id == id);
+        }
+
+        [Authorize(Roles = "Employee")]
+        public async Task<IActionResult> EmployeeViewProduct(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Product
+                .Include(p => p.Employee)
+                .Include(p => p.Feedbacks)
+                .ThenInclude(p => p.Client)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
         }
     }
 }
