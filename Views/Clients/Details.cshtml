@@ -35,9 +35,17 @@
         <dd class="col-sm-10">
             @foreach (var feedback in Model.Feedbacks)
             {
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Employee"))
+                {
+                    <a asp-controller="Products" asp-action="EmployeeViewProduct" asp-route-id="@feedback.ProductId">
+                        @feedback.Title
+                    </a>
+                }
+                else { 
                 <a asp-controller="Products" asp-action="Details" asp-route-id="@feedback.ProductId">
                     @feedback.Product.Name
                 </a>
+                }
                 <a asp-controller="Feedbacks" asp-action="Details" asp-route-id="@feedback.Id">
                     @feedback.Type
                 </a>

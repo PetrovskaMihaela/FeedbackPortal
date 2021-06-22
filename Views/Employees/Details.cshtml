@@ -41,9 +41,18 @@
         <dd class="col-sm-10">
             @foreach (var product in Model.Products)
             {
-                <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id">
-                    @product.Name
-                </a>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Employee"))
+                {
+                    <a asp-controller="Products" asp-action="EmployeeViewProduct" asp-route-id="@product.Id">
+                        @product.Name
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id">
+                        @product.Name
+                    </a>
+                }
             }
         </dd>
     </dl>

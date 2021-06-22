@@ -44,6 +44,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Products/Details/5
+        [Authorize(Roles ="Admin, Client")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -139,6 +140,7 @@ namespace FeedbackPortal.Controllers
                         throw;
                     }
                 }
+           
                 return RedirectToAction(nameof(Index));
             }
             ViewData["EmployeeId"] = new SelectList(_context.Employee, "Id", "Name", product.EmployeeId);

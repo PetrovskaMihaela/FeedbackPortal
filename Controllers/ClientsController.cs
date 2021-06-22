@@ -40,6 +40,7 @@ namespace FeedbackPortal.Controllers
         }
 
         // GET: Clients/Details/5
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

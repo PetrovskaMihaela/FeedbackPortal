@@ -286,13 +286,13 @@ namespace FeedbackPortal.Controllers
             return View(feedback);
         }
 
-        // POST: Enrollments/StudentEdit/5
+        // POST: Feedbacks/FeedbackEditClient/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [Authorize(Roles = "Client")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> StudentEdit(int id, [Bind("Id,Title,Details,Type,ClientId,ProductId")] Feedback feedback)
+        public async Task<IActionResult> FeedbackEditClient(int id, [Bind("Id,Title,Details,Type,ClientId,ProductId")] Feedback feedback)
         {
                 
             if (id != feedback.Id)
