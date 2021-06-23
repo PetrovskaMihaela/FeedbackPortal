@@ -158,6 +158,10 @@ namespace FeedbackPortal.Migrations
                         .HasColumnType("nvarchar(300)")
                         .HasMaxLength(300);
 
+                    b.Property<string>("IsChecked")
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 

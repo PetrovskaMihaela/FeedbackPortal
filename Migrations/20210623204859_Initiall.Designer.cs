@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FeedbackPortal.Migrations
 {
     [DbContext(typeof(FeedbackPortalContext))]
-    [Migration("20210619204344_Identity")]
-    partial class Identity
+    [Migration("20210623204859_Initiall")]
+    partial class Initiall
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -159,6 +159,10 @@ namespace FeedbackPortal.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(300)")
                         .HasMaxLength(300);
+
+                    b.Property<string>("IsChecked")
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");

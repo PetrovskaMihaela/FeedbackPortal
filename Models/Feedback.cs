@@ -31,6 +31,9 @@ namespace FeedbackPortal.Models
         public int ProductId { get; set; }
         [Display(Name = "Product")]
         public Product Product { get; set; }
-
+      
+        [Display(Name = "Checked")]
+        [StringLength(10)]
+        public string IsChecked { get; set; }
     }
 }

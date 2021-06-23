@@ -134,9 +134,9 @@ namespace FeedbackPortal.Models
                 context.SaveChanges();
                 context.Feedback.AddRange
                 (
-                new Feedback { Title = "First Feedback", Details = "Details about the first feedback", Type ="Complaint", ClientId = 1, ProductId = 1 },
-                new Feedback { Title = "Second Feedback", Details = "Details about the second feedback", Type = "Compliment", ClientId = 2, ProductId = 2 },
-                new Feedback { Title = "Third Feedback", Details = "Details about the third feedback", Type = "Sugestion", ClientId = 3, ProductId = 3 }
+                new Feedback { Title = "First Feedback", Details = "Details about the first feedback", Type ="Complaint", ClientId = 1, ProductId = 1, IsChecked = "-"},
+                new Feedback { Title = "Second Feedback", Details = "Details about the second feedback", Type = "Compliment", ClientId = 2, ProductId = 2, IsChecked = "-" },
+                new Feedback { Title = "Third Feedback", Details = "Details about the third feedback", Type = "Sugestion", ClientId = 3, ProductId = 3, IsChecked = "-" }
                 );
                 context.SaveChanges();
             }

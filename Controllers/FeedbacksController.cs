@@ -235,7 +235,7 @@ namespace FeedbackPortal.Controllers
         [Authorize(Roles = "Employee")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EmployeeEditFeedback(int id, [Bind("Id,Title,Details,Type,ClientId,ProductId")] Feedback feedback)
+        public async Task<IActionResult> EmployeeEditFeedback(int id, [Bind("Id,Title,Details,Type,ClientId,ProductId,IsChecked")] Feedback feedback)
         {
             if (id != feedback.Id)
             {
